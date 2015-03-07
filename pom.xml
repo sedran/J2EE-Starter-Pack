@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.asosyalbebe.springio</groupId>
-	<artifactId>springio</artifactId>
+	<groupId>com.asosyalbebe</groupId>
+	<artifactId>J2EE-Starter-Pack</artifactId>
 	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>SampleSpringIO</name>
-	<description>SampleSpringIO Project	</description>
+	<name>J2EE Starter Pack</name>
+	<description>J2EE Starter Pack</description>
 
 	<properties>
 		<spring.version>4.1.5.RELEASE</spring.version>
@@ -134,7 +134,7 @@
 				<version>2.2</version>
 				<configuration>
 					<warSourceDirectory>src/main/webapp</warSourceDirectory>
-					<warName>samplespring</warName>
+					<warName>J2EEStarterPack</warName>
 				</configuration>
 			</plugin>
 
