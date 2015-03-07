@@ -3,6 +3,8 @@ Sample Spring Application
 
 This is not a real world project. This project can be used to start a new project with ready-to-run configurations.
 
+The main thing here is to keep the latest versions of the softwares and the tools together. 
+
 ## This project contains the following configurations and libraries:
 
 - Spring Framework (version: 4.1.5.RELEASE)
