@@ -19,3 +19,4 @@ The main thing here is to keep the latest versions of the softwares and the tool
 - Hibernate
 - MySQL
 - A Sample RESTful API
+- Tiles View Resolver

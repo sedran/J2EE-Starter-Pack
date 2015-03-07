@@ -15,6 +15,12 @@ public class BaseController {
 	private static int counter = 0;
 	private String VIEW_INDEX = "index";
 
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login() {
+
+		return "login";
+	}
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String welcome(ModelMap model) {
 		model.addAttribute("message", "Welcome");
