@@ -22,11 +22,11 @@ public class User implements UserDetails, Serializable {
 	private Date createDate;
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<GrantedAuthority> getAuthorities() {
 		Set<GrantedAuthority> set = new HashSet<GrantedAuthority>();
 		// TODO GET THEM FROM DB
-		set.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		set.add(new SimpleGrantedAuthority("ROLE_USER"));
+		set.add(new SimpleGrantedAuthority("PRV_HOMEPAGE"));
+		set.add(new SimpleGrantedAuthority("PRV_PROFILE"));
 		return set;
 	}
 

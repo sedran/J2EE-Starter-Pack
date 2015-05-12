@@ -1,17 +1,90 @@
-<beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
            http://www.springframework.org/schema/security
            http://www.springframework.org/schema/security/spring-security.xsd">
+           
+    <!-- UserService that gets users from Database -->
+	<beans:bean name="userServiceImpl" class="com.asosyalbebe.samplespring.user.service.UserServiceImpl" />
 
-	<!-- IGNORE THOSE PATHS -->
-	<http pattern="/css/**" security="none" />
-	<http pattern="/js/**" security="none" />
-	<http pattern="/img/**" security="none" />
-	<http pattern="/login*" security="none" />
-	<http pattern="/favicon.ico" security="none" />
+	<beans:bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint" p:loginFormUrl="/login" p:useForward="false" p:forceHttps="false" />
 
+	<beans:bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" p:defaultTargetUrl="/" />
+
+	<beans:bean id="authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" p:defaultFailureUrl="/login?error=true" p:useForward="false" />
+
+	<!-- Decide where to redirect when user's access to somewhere is denied -->
+	<beans:bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+		<beans:property name="errorPage" value="/accessDenied" />
+	</beans:bean>
+	
+	<!-- Adds remember me feature -->
+	<beans:bean id="tokenBasedRememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+	    <!-- If you don't want to use a remember me checkbox in login form, set this to true -->
+		<beans:property name="alwaysRemember" value="false" />
+		
+		<!-- Change this hash for your security! -->
+		<beans:property name="key" value="d96c3b02ab918c8db6a3688b1fae9348" />
+		
+		<!-- if login form has a checkbox for remember me, its name must be 'remember' -->
+		<beans:property name="parameter" value="remember" />
+		
+		<!-- Name of the remember me cookie -->
+		<beans:property name="cookieName" value="_remember_me" />
+		
+		<!-- 90 Days -->
+		<beans:property name="tokenValiditySeconds" value="7776000" />
+		
+		<!-- User Details Service to get users from DB -->
+		<beans:property name="userDetailsService" ref="userServiceImpl" />
+	</beans:bean>
+	
+	<beans:bean name="rememberMeAuthenticationFilter" class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		<beans:property name="rememberMeServices" ref="tokenBasedRememberMeServices" />
+	</beans:bean>
+	
+	<beans:bean name="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+	
+	<beans:bean name="rememberMeAuthProvider" class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+		<beans:property name="key" value="d96c3b02ab918c8db6a3688b1fae9348" />
+	</beans:bean>
+	
+	<beans:bean id="anonymousAuthProvider" class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+		<beans:property name="key" value="foobar" />
+	</beans:bean>
+	
+	<!-- Define UserService in order for spring security to get correct users -->
+	<authentication-manager id="authenticationManager">
+		<authentication-provider user-service-ref="userServiceImpl">
+			<password-encoder ref="bcryptPasswordEncoder"></password-encoder>
+		</authentication-provider>
+		<authentication-provider ref="rememberMeAuthProvider" />
+		<authentication-provider ref="anonymousAuthProvider" />
+	</authentication-manager>
+	
+	<!-- Customize how to process an authentication request -->
+	<beans:bean id="authenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+	    <!-- Define where to POST login credentials -->
+		<beans:property name="filterProcessesUrl" value="/dologin" />
+		
+		<!-- Our custom authentication manager -->
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		
+		<!-- Use only HTTP POST request -->
+		<beans:property name="postOnly" value="true" />
+		
+		<!-- Our custom authentication success handler -->
+		<beans:property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
+		
+		<!-- Our custom authentication failure handler -->
+		<beans:property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
+		
+		<!-- To enable remember me feature -->
+		<beans:property name="rememberMeServices" ref="tokenBasedRememberMeServices" />
+	</beans:bean>
 
 	<!-- Custom RoleVoter: Change role prefix to PRV_ -->
 	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
@@ -28,28 +101,62 @@
 		</beans:property>
 	</beans:bean>
 
-	<http access-decision-manager-ref="accessDecisionManager">
-	    <!-- Login page requires anonymous authentication -->
-		<intercept-url pattern="/login*" access="PRV_IS_AUTHENTICATED_ANONYMOUSLY" />
-		
-		<!-- Other pages requires normal login -->
-		<intercept-url pattern="/**" access="PRV_USER" />
-		
-		<!-- Let spring security know login page so that it can redirect users to there -->
-		<form-login login-page="/login" />
-		
-		<!-- Say where is your logout page. -->
-		<logout delete-cookies="JSESSIONID" logout-url="/logout" logout-success-url="/" invalidate-session="true" />
-		
-		<!-- Automatically give this privilege to anonymous users -->
-	    <anonymous granted-authority="PRV_IS_AUTHENTICATED_ANONYMOUSLY"/>
-	</http>
+	<beans:bean id="securityMetadataSource" class="com.asosyalbebe.samplespring.user.security.CustomFilterInvocationDefinitionSource" />
 
-	<!-- UserService that gets users from Database -->
-	<beans:bean name="userServiceImpl" class="com.asosyalbebe.samplespring.user.service.UserServiceImpl"></beans:bean>
+	<beans:bean id="filterInvocationInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		<beans:property name="accessDecisionManager" ref="accessDecisionManager" />
+		<beans:property name="securityMetadataSource" ref="securityMetadataSource" />
+	</beans:bean>
+	
+	<beans:bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<beans:property name="securityContextRepository">
+			<beans:bean class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
+				<beans:property name="allowSessionCreation" value="true" />
+			</beans:bean>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- Redirect to home page after logout -->
+	<beans:bean id="customLogoutSuccessHandler" class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
+		<beans:property name="defaultTargetUrl" value="/" />
+	</beans:bean>
+	
+	<!-- Logout filter -->
+	<beans:bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<beans:constructor-arg ref="customLogoutSuccessHandler" />
+		<beans:constructor-arg>
+			<beans:list>
+				<beans:bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+				<beans:ref bean="tokenBasedRememberMeServices" />
+			</beans:list>
+		</beans:constructor-arg>
+		<beans:property name="filterProcessesUrl" value="/logout" />
+	</beans:bean>
+	
+	<beans:bean id="anonymousProcessingFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+		<beans:property name="key" value="foobar" />
+		<beans:property name="userAttribute" value="anonymousUser,PRIV_ANONYMOUS" />
+	</beans:bean>
+	
+	<beans:bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		<beans:property name="authenticationEntryPoint" ref="loginUrlAuthenticationEntryPoint" />
+		<beans:property name="accessDeniedHandler" ref="accessDeniedHandler" />
+	</beans:bean>
 
-	<!-- Define UserService in order for spring security to get correct users -->
-	<authentication-manager>
-		<authentication-provider user-service-ref="userServiceImpl"></authentication-provider>
-	</authentication-manager>
+	<beans:bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
+		<filter-chain-map request-matcher="ant">
+			<filter-chain pattern="/css/**" filters="none" />
+			<filter-chain pattern="/js/**" filters="none" />
+			<filter-chain pattern="/img/**" filters="none" />
+			<filter-chain pattern="/favicon.ico" filters="none" />
+			<filter-chain pattern="/**" filters="securityContextPersistenceFilter,
+				logoutFilter,
+				authenticationFilter,
+				rememberMeAuthenticationFilter,
+				anonymousProcessingFilter,
+				exceptionTranslationFilter,
+				filterInvocationInterceptor" />
+		</filter-chain-map>
+	</beans:bean>
 </beans:beans>

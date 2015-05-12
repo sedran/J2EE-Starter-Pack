@@ -2,7 +2,9 @@ package com.asosyalbebe.samplespring.user.model;
 
 import java.io.Serializable;
 
-public class Privilege implements Serializable {
+import org.springframework.security.core.GrantedAuthority;
+
+public class Privilege implements Serializable, GrantedAuthority {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
@@ -22,6 +24,11 @@ public class Privilege implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String getAuthority() {
+		return name;
 	}
 
 }
