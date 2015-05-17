@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.asosyalbebe.samplespring.user.model.AppUrl;
-import com.asosyalbebe.samplespring.user.model.Privilege;
+import com.asosyalbebe.samplespring.user.model.AclUrl;
+import com.asosyalbebe.samplespring.user.model.AclPrivilege;
 import com.asosyalbebe.samplespring.user.model.User;
 
 public class UserServiceImpl implements UserService {
@@ -33,21 +33,21 @@ public class UserServiceImpl implements UserService {
 		
 		user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
 
-		Privilege privilege = new Privilege();
+		AclPrivilege privilege = new AclPrivilege();
 		privilege.setName("PRV_HOMEPAGE");
 		user.getAuthorities().add(privilege);
 		return user;
 	}
 
 	@Override
-	public List<AppUrl> getAllAppUrls() {
-		Set<Privilege> privileges = new HashSet<Privilege>();
-		Privilege privilege = new Privilege();
+	public List<AclUrl> getAllAppUrls() {
+		Set<AclPrivilege> privileges = new HashSet<AclPrivilege>();
+		AclPrivilege privilege = new AclPrivilege();
 		privilege.setName("PRV_HOMEPAGE");
 		privileges.add(privilege);
 
-		List<AppUrl> list = new ArrayList<AppUrl>();
-		list.add(new AppUrl(1L, "/", false, privileges));
+		List<AclUrl> list = new ArrayList<AclUrl>();
+		list.add(new AclUrl(1L, "/", false, privileges));
 		return list;
 	}
 

@@ -16,8 +16,8 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 
-import com.asosyalbebe.samplespring.user.model.AppUrl;
-import com.asosyalbebe.samplespring.user.model.Privilege;
+import com.asosyalbebe.samplespring.user.model.AclUrl;
+import com.asosyalbebe.samplespring.user.model.AclPrivilege;
 import com.asosyalbebe.samplespring.user.service.UserService;
 import com.asosyalbebe.samplespring.utils.Logger;
 import com.asosyalbebe.samplespring.utils.Pair;
@@ -83,13 +83,13 @@ public class CustomFilterInvocationDefinitionSource implements FilterInvocationS
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		List<AppUrl> urls = userService.getAllAppUrls();
-		for (AppUrl so : urls) {
+		List<AclUrl> urls = userService.getAllAppUrls();
+		for (AclUrl so : urls) {
 			Collection<ConfigAttribute> attributes = new HashSet<ConfigAttribute>();
 
-			Set<Privilege> urlPrivileges = so.getPrivileges();
+			Set<AclPrivilege> urlPrivileges = so.getPrivileges();
 			if (urlPrivileges != null) {
-				for (Privilege priv : urlPrivileges) {
+				for (AclPrivilege priv : urlPrivileges) {
 					attributes.add(new SecurityConfig(priv.getName()));
 				}
 			}
