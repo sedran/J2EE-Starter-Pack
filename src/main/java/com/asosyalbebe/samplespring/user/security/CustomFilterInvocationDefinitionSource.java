@@ -24,84 +24,84 @@ import com.asosyalbebe.samplespring.utils.Pair;
 
 public class CustomFilterInvocationDefinitionSource implements FilterInvocationSecurityMetadataSource, InitializingBean {
 
-	private Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
 
-	@Autowired
-	protected UserService userService;
+    @Autowired
+    protected UserService userService;
 
-	private Map<String, Collection<ConfigAttribute>> urlAttributeCache;
-	private List<Pair<Pattern, Collection<ConfigAttribute>>> patternAttrList;
+    private Map<String, Collection<ConfigAttribute>> urlAttributeCache;
+    private List<Pair<Pattern, Collection<ConfigAttribute>>> patternAttrList;
 
-	private Collection<ConfigAttribute> emptyAttributes = new ArrayList<ConfigAttribute>();
+    private Collection<ConfigAttribute> emptyAttributes = new ArrayList<ConfigAttribute>();
 
-	public CustomFilterInvocationDefinitionSource() {
-		urlAttributeCache = new HashMap<String, Collection<ConfigAttribute>>();
-		patternAttrList = new ArrayList<Pair<Pattern, Collection<ConfigAttribute>>>();
+    public CustomFilterInvocationDefinitionSource() {
+	urlAttributeCache = new HashMap<String, Collection<ConfigAttribute>>();
+	patternAttrList = new ArrayList<Pair<Pattern, Collection<ConfigAttribute>>>();
+    }
+
+    @Override
+    public Collection<ConfigAttribute> getAllConfigAttributes() {
+	return emptyAttributes;
+    }
+
+    @Override
+    public boolean supports(Class<?> clazz) {
+	return FilterInvocation.class.isAssignableFrom(clazz);
+    }
+
+    @Override
+    public Collection<ConfigAttribute> getAttributes(Object object) {
+	String url = ((FilterInvocation) object).getRequest().getServletPath();
+	if (url.length() > 1 && url.endsWith("/")) {
+	    // For example: /user/ or /admin/
+	    url = url.substring(0, url.length() - 1);
 	}
 
-	@Override
-	public Collection<ConfigAttribute> getAllConfigAttributes() {
-		return emptyAttributes;
-	}
+	Collection<ConfigAttribute> urlAttributes = urlAttributeCache.get(url);
 
-	@Override
-	public boolean supports(Class<?> clazz) {
-		return FilterInvocation.class.isAssignableFrom(clazz);
-	}
-
-	@Override
-	public Collection<ConfigAttribute> getAttributes(Object object) {
-		String url = ((FilterInvocation) object).getRequest().getServletPath();
-		if (url.length() > 1 && url.endsWith("/")) {
-			// For example: /user/ or /admin/
-			url = url.substring(0, url.length() - 1);
+	if (urlAttributes == null) {
+	    for (Pair<Pattern, Collection<ConfigAttribute>> pair : patternAttrList) {
+		if (pair.getFirst().matcher(url).matches()) {
+		    urlAttributes = pair.getSecond();
+		    break;
 		}
+	    }
 
-		Collection<ConfigAttribute> urlAttributes = urlAttributeCache.get(url);
+	    if (urlAttributes == null) {
+		urlAttributes = emptyAttributes;
+	    }
 
-		if (urlAttributes == null) {
-			for (Pair<Pattern, Collection<ConfigAttribute>> pair : patternAttrList) {
-				if (pair.getFirst().matcher(url).matches()) {
-					urlAttributes = pair.getSecond();
-					break;
-				}
-			}
+	    urlAttributeCache.put(url, urlAttributes);
+	}
 
-			if (urlAttributes == null) {
-				urlAttributes = emptyAttributes;
-			}
+	return urlAttributes;
+    }
 
-			urlAttributeCache.put(url, urlAttributes);
+    public void clearCache() {
+	urlAttributeCache.clear();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+	List<AclUrl> urls = userService.getAllAppUrls();
+	for (AclUrl so : urls) {
+	    Collection<ConfigAttribute> attributes = new HashSet<ConfigAttribute>();
+
+	    Set<AclPrivilege> urlPrivileges = so.getPrivileges();
+	    if (urlPrivileges != null) {
+		for (AclPrivilege priv : urlPrivileges) {
+		    attributes.add(new SecurityConfig(priv.getName()));
 		}
+	    }
 
-		return urlAttributes;
+	    if (so.getIsRegularExpression()) {
+		patternAttrList.add(new Pair<Pattern, Collection<ConfigAttribute>>(Pattern.compile(so.getUrl()), attributes));
+		log.info("Pattern: {0} privileges: {1}", so.getUrl(), attributes);
+	    } else {
+		urlAttributeCache.put(so.getUrl(), attributes);
+		log.info("URL: {0} privileges: {1}", so.getUrl(), attributes);
+	    }
 	}
-
-	public void clearCache() {
-		urlAttributeCache.clear();
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		List<AclUrl> urls = userService.getAllAppUrls();
-		for (AclUrl so : urls) {
-			Collection<ConfigAttribute> attributes = new HashSet<ConfigAttribute>();
-
-			Set<AclPrivilege> urlPrivileges = so.getPrivileges();
-			if (urlPrivileges != null) {
-				for (AclPrivilege priv : urlPrivileges) {
-					attributes.add(new SecurityConfig(priv.getName()));
-				}
-			}
-
-			if (so.getIsRegularExpression()) {
-				patternAttrList.add(new Pair<Pattern, Collection<ConfigAttribute>>(Pattern.compile(so.getUrl()), attributes));
-				log.info("Pattern: {0} privileges: {1}", so.getUrl(), attributes);
-			} else {
-				urlAttributeCache.put(so.getUrl(), attributes);
-				log.info("URL: {0} privileges: {1}", so.getUrl(), attributes);
-			}
-		}
-	}
+    }
 
 }

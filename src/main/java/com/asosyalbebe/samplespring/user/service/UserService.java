@@ -7,5 +7,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import com.asosyalbebe.samplespring.user.model.AclUrl;
 
 public interface UserService extends UserDetailsService {
-	public List<AclUrl> getAllAppUrls();
+    public List<AclUrl> getAllAppUrls();
 }

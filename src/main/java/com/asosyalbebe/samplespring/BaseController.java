@@ -10,31 +10,31 @@ import com.asosyalbebe.samplespring.utils.Logger;
 
 @Controller
 public class BaseController {
-	private Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
 
-	private static int counter = 0;
-	private String VIEW_INDEX = "index";
+    private static int counter = 0;
+    private String VIEW_INDEX = "index";
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String login() {
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
 
-		return "login";
-	}
+	return "login";
+    }
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String welcome(ModelMap model) {
-		model.addAttribute("message", "Welcome");
-		model.addAttribute("counter", ++counter);
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String welcome(ModelMap model) {
+	model.addAttribute("message", "Welcome");
+	model.addAttribute("counter", ++counter);
 
-		// Spring uses InternalResourceViewResolver and return back index.jsp
-		return VIEW_INDEX;
-	}
+	// Spring uses InternalResourceViewResolver and return back index.jsp
+	return VIEW_INDEX;
+    }
 
-	@RequestMapping(value = "/hump/{name}", method = RequestMethod.GET)
-	public String welcomeName(@PathVariable String name, ModelMap model) {
-		model.addAttribute("message", "Welcome " + name);
-		model.addAttribute("counter", ++counter);
-		log.info("Test Logu by {0} {1}", "serdar", "kuzucu");
-		return VIEW_INDEX;
-	}
+    @RequestMapping(value = "/hump/{name}", method = RequestMethod.GET)
+    public String welcomeName(@PathVariable String name, ModelMap model) {
+	model.addAttribute("message", "Welcome " + name);
+	model.addAttribute("counter", ++counter);
+	log.info("Test Logu by {0} {1}", "serdar", "kuzucu");
+	return VIEW_INDEX;
+    }
 }
