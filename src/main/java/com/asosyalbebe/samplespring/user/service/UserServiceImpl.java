@@ -1,54 +1,51 @@
 package com.asosyalbebe.samplespring.user.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.asosyalbebe.samplespring.user.dao.UserDao;
 import com.asosyalbebe.samplespring.user.model.AclUrl;
-import com.asosyalbebe.samplespring.user.model.AclPrivilege;
 import com.asosyalbebe.samplespring.user.model.User;
+import com.asosyalbebe.samplespring.utils.Logger;
 
 public class UserServiceImpl implements UserService {
+    protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private PasswordEncoder bcryptPasswordEncoder;
 
+    @Autowired
+    private UserDao userDao;
+
+    @PostConstruct
+    public void postConstruct() {
+	log.debug("123456 hash is {0}", bcryptPasswordEncoder.encode("123456"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	User user = new User();
-	user.setCreateDate(new Date());
-	user.setEmail("serdarkuzucu13@gmail.com");
-	user.setId(1L);
-	user.setName("Serdar");
-	user.setSurname("Kuzucu");
-	user.setUsername(username);
-	user.setPassword("123456");
+	// login can be done via either email or username
+	User user = userDao.findUserByUsername(username);
+	if (user == null) {
+	    user = userDao.findUserByEmail(username);
+	}
 
-	user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
+	if (user == null) {
+	    throw new UsernameNotFoundException("error.usernameNotFound");
+	}
 
-	AclPrivilege privilege = new AclPrivilege();
-	privilege.setName("PRV_HOMEPAGE");
-	user.getAuthorities().add(privilege);
 	return user;
     }
 
     @Override
     public List<AclUrl> getAllAppUrls() {
-	Set<AclPrivilege> privileges = new HashSet<AclPrivilege>();
-	AclPrivilege privilege = new AclPrivilege();
-	privilege.setName("PRV_HOMEPAGE");
-	privileges.add(privilege);
-
-	List<AclUrl> list = new ArrayList<AclUrl>();
-	list.add(new AclUrl(1L, "/", false, privileges));
-	return list;
+	return userDao.findAllUrls();
     }
 
 }

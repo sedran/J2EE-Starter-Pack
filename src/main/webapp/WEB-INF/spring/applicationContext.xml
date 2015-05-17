@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -11,7 +12,9 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/tx 
-        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<context:spring-configured />
 	<context:component-scan base-package="com.asosyalbebe.samplespring" />
@@ -69,8 +72,32 @@
 	
 	<tx:annotation-driven transaction-manager="transactionManager" />       
 	
-	<bean id="commonHbSessionInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor">
+	<!-- AOP CONFIG -->
+	<aop:config>
+		<aop:pointcut id="ptServiceMethods" expression="execution(* com.asosyalbebe..*Service.*(..))" />
+		<aop:pointcut id="ptPerformanceMethods" expression="execution(* com.asosyalbebe..*Service.*(..)) or execution(* com.asosyalbebe..*Dao.*(..))" />
+
+		<aop:advisor pointcut-ref="ptServiceMethods" advice-ref="performanceMonitorInterceptor" order="0" />
+		<aop:advisor pointcut-ref="ptServiceMethods" advice-ref="commonHbSessionInterceptor" order="1" />
+		<aop:advisor pointcut-ref="ptServiceMethods" advice-ref="commonTxHbAdvice" order="2" />
+		<aop:advisor pointcut-ref="ptPerformanceMethods" advice-ref="performanceMonitorInterceptor" order="0" />
+	</aop:config>
+	
+	<bean id="commonHbSessionInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:advice id="commonTxHbAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- all methods starting with 'get' are read-only -->
+			<tx:method name="get*" read-only="true" />
+			<!-- other methods use the default transaction settings -->
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.JamonPerformanceMonitorInterceptor">
+		<property name="trackAllInvocations" value="true" />
 	</bean>
 
 </beans>
