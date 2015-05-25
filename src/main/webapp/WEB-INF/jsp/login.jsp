@@ -12,6 +12,11 @@
 			<input type="text" name="j_password" />
 		</div>
 		
+		<div>
+			Remember Me:
+			<input type="checkbox" name="remember" value="yes" />
+		</div>
+		
 		<button type="submit">Login</button>
 	</form>
 </body>
