@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/common/includes.jsp"%>
 <!-- jQuery -->
 <script src="/static/js/jquery.min.js"></script>
 

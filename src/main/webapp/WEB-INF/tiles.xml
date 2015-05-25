@@ -9,6 +9,7 @@
 	
 	<definition name="adminTemplate" template="/WEB-INF/jsp/common/adminTemplate.jsp">
 		<put-attribute name="head" value="/WEB-INF/jsp/common/adminHead.jsp" />
+		<put-attribute name="nav" value="/WEB-INF/jsp/admin/adminNav.jsp" />
 		<put-attribute name="footer" value="/WEB-INF/jsp/common/adminFooter.jsp" />
 	</definition>
 

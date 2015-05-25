@@ -7,7 +7,10 @@
 </head>
 
 <body>
-	<tiles:insertAttribute name="body" />
+	<div id="wrapper">
+		<tiles:insertAttribute name="nav" />
+		<tiles:insertAttribute name="body" />
+	</div>
 	
 	<tiles:insertAttribute name="footer" />
 </body>
