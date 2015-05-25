@@ -1,0 +1,1 @@
+<p>Some unnecessary copyright statements.</p>

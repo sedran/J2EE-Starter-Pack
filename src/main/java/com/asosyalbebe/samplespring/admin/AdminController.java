@@ -15,6 +15,6 @@ public class AdminController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String adminHome(Model model, HttpServletRequest request, HttpServletResponse response) {
 
-	return "admin/admin";
+	return "adminHome.view";
     }
 }

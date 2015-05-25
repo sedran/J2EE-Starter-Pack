@@ -15,6 +15,7 @@
 		<slf4j.version>1.5.8</slf4j.version>
 		<log4j.version>1.2.14</log4j.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
+		<apache.tiles.version>2.2.1</apache.tiles.version>
 	</properties>
 
 	<dependencies>
@@ -213,6 +214,19 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
+		</dependency>
+		
+		<!-- Apache Tiles View Resolver -->
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-core</artifactId>
+			<version>${apache.tiles.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>${apache.tiles.version}</version>
 		</dependency>
 	</dependencies>
 
