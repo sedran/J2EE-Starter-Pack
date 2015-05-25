@@ -2,6 +2,7 @@ package com.asosyalbebe.samplespring.user.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.springframework.stereotype.Repository;
 
 import com.asosyalbebe.samplespring.user.model.AclUrl;
@@ -9,6 +10,7 @@ import com.asosyalbebe.samplespring.user.model.User;
 import com.asosyalbebe.samplespring.utils.dao.BaseDaoImpl;
 
 @Repository
+@SuppressWarnings("unchecked")
 public class UserDaoImpl extends BaseDaoImpl implements UserDao {
 
     @Override
@@ -39,6 +41,15 @@ public class UserDaoImpl extends BaseDaoImpl implements UserDao {
     @Override
     public List<AclUrl> findAllUrls() {
 	return findAllEntities(AclUrl.class);
+    }
+
+    @Override
+    public List<User> findUsers(int firstResult, int maxResult) {
+	Criteria criteria = currentSession().createCriteria(User.class);
+	criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+	criteria.setFirstResult(firstResult);
+	criteria.setMaxResults(maxResult);
+	return criteria.list();
     }
 
 }

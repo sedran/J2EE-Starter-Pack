@@ -11,6 +11,6 @@
 <c:set var="currentTimeMillis" value="<%=System.currentTimeMillis()%>" />
 <c:set var="cacheVersion" value="1" />
 
-<c:set var="jsFolder" value="/res/js" />
-<c:set var="imgFolder" value="/res/img" />
-<c:set var="cssFolder" value="/res/css" />
+<c:set var="jsFolder" value="/static/js" />
+<c:set var="imgFolder" value="/static/img" />
+<c:set var="cssFolder" value="/static/css" />

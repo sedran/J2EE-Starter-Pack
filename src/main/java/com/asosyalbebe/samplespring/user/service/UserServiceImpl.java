@@ -48,4 +48,9 @@ public class UserServiceImpl implements UserService {
 	return userDao.findAllUrls();
     }
 
+    @Override
+    public List<User> getUsers(int firstResult, int maxResult) {
+	return userDao.findUsers(firstResult, maxResult);
+    }
+
 }

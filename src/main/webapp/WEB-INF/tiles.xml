@@ -25,6 +25,17 @@
 		<put-attribute name="title" cascade="true" value="Admin Panel" />
 		<put-attribute name="body" value="/WEB-INF/jsp/admin/home.jsp" />
 		<put-list-attribute name="cssFiles" cascade="true"></put-list-attribute>
-		<put-list-attribute name="jsFiles" cascade="true"></put-list-attribute>
+		<put-list-attribute name="jsFiles" cascade="true">
+			<add-attribute value="morris-data.js"></add-attribute>
+		</put-list-attribute>
+	</definition>
+	
+	<definition name="adminUsers.view" extends="adminTemplate">
+		<put-attribute name="title" cascade="true" value="User Management : Admin Panel" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/users.jsp" />
+		<put-list-attribute name="cssFiles" cascade="true"></put-list-attribute>
+		<put-list-attribute name="jsFiles" cascade="true">
+			<add-attribute value="userManagement.js"></add-attribute>
+		</put-list-attribute>
 	</definition>
 </tiles-definitions>

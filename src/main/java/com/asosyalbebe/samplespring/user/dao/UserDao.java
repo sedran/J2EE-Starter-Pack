@@ -18,4 +18,6 @@ public interface UserDao extends BaseDao {
     public void updateUser(User user);
 
     public List<AclUrl> findAllUrls();
+
+    public List<User> findUsers(int firstResult, int maxResult);
 }
