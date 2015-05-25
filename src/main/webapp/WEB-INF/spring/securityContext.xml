@@ -146,9 +146,7 @@
 
 	<beans:bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
 		<filter-chain-map request-matcher="ant">
-			<filter-chain pattern="/css/**" filters="none" />
-			<filter-chain pattern="/js/**" filters="none" />
-			<filter-chain pattern="/img/**" filters="none" />
+			<filter-chain pattern="/static/**" filters="none" />
 			<filter-chain pattern="/favicon.ico" filters="none" />
 			<filter-chain pattern="/**" filters="securityContextPersistenceFilter,
 				logoutFilter,
