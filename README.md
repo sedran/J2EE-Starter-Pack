@@ -78,5 +78,28 @@ Assuming that you have already downloaded a jetty distribution for java7 in a li
 
 10. That's all. Enjoy it and please contribute. All pull requests to this project are welcome.
     
-    
-    
+## Running in Eclipse using Maven Tomcat Plugin
+
+1. Import the project into Eclipse as `Existing Maven Project`
+
+2. Create a database named `j2eestarter` in MySQL:
+
+    ```
+    mysql > CREATE DATABASE j2eestarter DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+    ```
+
+3. Right click to the project, `Run as -> Maven build...`
+
+4. Write `tomcat:run` to Goals.
+
+5. Choose `Skip tests` checkbox.
+
+6. Add a parameter named `port` and whose value is the port you want to use, for example, 1991.
+
+7. Click Run.
+
+8. Since we use `hibernate.hbm2ddl.auto=update` property, Hibernate created our database schema automatically in first run. Now, run the SQL script in `$PROJECT_HOME/files/setupScript/import.sql`. This will create initial ACL rules. In Eclipse console, click red square button to terminate the tomcat process.
+
+9. From Run Configurations window, Run the same maven configuration again. The project is now started. Navigate to `http://localhost:1991` in your browser. If you used a different port in step 6, use that port. It will show the home page. Initial username/password combination for admin user is `admin/123456`. After login, you can navigate to `http://localhost:1991/admin` to see the admin panel.
+
+10. That's all. Enjoy it and please contribute. All pull requests to this project are welcome.
